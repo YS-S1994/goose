@@ -13,18 +13,7 @@
     "numReplicas": 1,
     "restartPolicyType": "on_failure",
     "restartPolicyMaxRetries": 5,
-    "healthchecks": {
-      "liveness": {
-        "command": ["curl", "-f", "http://localhost:3000/health"],
-        "interval": 30,
-        "timeout": 10,
-        "retries": 3
-      }
-    }
-  },
-  "plugins": [
-    {
-      "type": "postgres"
-    }
-  ]
+    "memory": "1Gi",
+    "cpu": 1
+  }
 }
