@@ -1,76 +1,23 @@
-# syntax=docker/dockerfile:1.4
-# goose CLI and Server Docker Image
-# Multi-stage build for minimal final image size
+FROM debian:bookworm-slim
 
-# Build stage
-FROM rust:1.82-bookworm AS builder
-
-# Install build dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    pkg-config \
-    libssl-dev \
-    libdbus-1-dev \
-    libclang-dev \
-    protobuf-compiler \
-    libprotobuf-dev \
-    ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libdbus-1-3 libxcb1 ca-certificates curl bash \
     && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
-WORKDIR /build
+WORKDIR /app
 
-# Copy source code
-COPY . .
-
-# Build release binaries with optimizations
-ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
-ENV CARGO_PROFILE_RELEASE_LTO=true
-ENV CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
-ENV CARGO_PROFILE_RELEASE_OPT_LEVEL=z
-ENV CARGO_PROFILE_RELEASE_STRIP=true
-RUN cargo build --release --package goose-cli
-
-# Runtime stage - minimal Debian
-FROM debian:bookworm-slim@sha256:b1a741487078b369e78119849663d7f1a5341ef2768798f7b7406c4240f86aef
-
-# Install only runtime dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    ca-certificates \
-    libssl3 \
-    libdbus-1-3 \
-    libgomp1 \
-    libxcb1 \
-    curl \
-    git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy binary from builder
 COPY --from=builder /build/target/release/goose /usr/local/bin/goose
+COPY entrypoint.sh /app/entrypoint.sh
 
-# Create non-root user
-RUN useradd -m -u 1000 -s /bin/bash goose && \
-    mkdir -p /home/goose/.config/goose && \
-    chown -R goose:goose /home/goose
+RUN chmod +x /app/entrypoint.sh && \
+    mkdir -p /root/.config/goose && \
+    chmod 700 /root/.config/goose
 
-# Set up environment
-ENV PATH="/usr/local/bin:${PATH}"
-ENV HOME="/home/goose"
+EXPOSE 3000
 
-# Switch to non-root user
-USER goose
-WORKDIR /home/goose
+ENV RUST_LOG=info,goose=debug \
+    GOOSE_ADDR=0.0.0.0 \
+    PORT=3000
 
-# Default to goose CLI
-ENTRYPOINT ["/usr/local/bin/goose"]
-CMD ["--help"]
-
-# Labels for metadata
-LABEL org.opencontainers.image.title="goose"
-LABEL org.opencontainers.image.description="goose CLI"
-LABEL org.opencontainers.image.vendor="AAIF"
-LABEL org.opencontainers.image.source="https://github.com/aaif-goose/goose"
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD []
