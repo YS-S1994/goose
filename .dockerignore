@@ -1,1 +1,63 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+.gitlab-ci.yml
 
+# Rust/Cargo
+target/
+Cargo.lock.backup
+*.rlib
+*.rmeta
+.cargo/registry/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.sublime-project
+.sublime-workspace
+
+# CI/CD
+.circleci/
+.travis.yml
+azure-pipelines.yml
+
+# Documentation & Tests
+docs/
+documentation/
+examples/
+tests/
+README.md
+CONTRIBUTING.md
+LICENSE
+
+# Node modules (إذا كان هناك UI)
+node_modules/
+.pnpm-store/
+ui/node_modules/
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.envrc
+.direnv
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.swap
