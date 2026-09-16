@@ -13,7 +13,35 @@
     "numReplicas": 1,
     "restartPolicyType": "on_failure",
     "restartPolicyMaxRetries": 5,
-    "memory": "1Gi",
-    "cpu": 1
-  }
+    "memory": "2Gi",
+    "cpu": 1.5,
+    "timeout": 300,
+    "healthchecks": {
+      "liveness": {
+        "httpPath": "/health",
+        "initialDelaySeconds": 30,
+        "periodSeconds": 30,
+        "timeoutSeconds": 10,
+        "failureThreshold": 3
+      }
+    }
+  },
+  "environmentVariables": {
+    "PORT": "3000",
+    "GOOSE_ADDR": "0.0.0.0",
+    "RUST_LOG": "info,goose=debug",
+    "GOOSE_CONFIG_HOME": "/app/config",
+    "GOOSE_DATA_HOME": "/app/data",
+    "ENVIRONMENT": "production"
+  },
+  "volumes": [
+    {
+      "mountPath": "/app/config",
+      "name": "goose-config"
+    },
+    {
+      "mountPath": "/app/data",
+      "name": "goose-data"
+    }
+  ]
 }
