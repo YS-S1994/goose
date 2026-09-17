@@ -87,23 +87,6 @@ export CLAUDE_THINKING_TYPE=disabled
 To see Claude's thinking output in the **CLI**, you also need to set `GOOSE_CLI_SHOW_THINKING=1`. In **goose Desktop**, thinking output is shown automatically in a collapsible "Show reasoning" toggle.
 :::
 
-### Planning Mode Configuration
-
-These variables control goose's [planning functionality](/docs/guides/context-engineering/creating-plans).
-
-| Variable | Purpose | Values | Default |
-|----------|---------|---------|---------|
-| `GOOSE_PLANNER_PROVIDER` | Specifies which provider to use for planning mode | [See available providers](/docs/getting-started/providers#available-providers) | Falls back to GOOSE_PROVIDER |
-| `GOOSE_PLANNER_MODEL` | Specifies which model to use for planning mode | Model name (e.g., "gpt-4", "claude-sonnet-4-20250514")| Falls back to GOOSE_MODEL |
-
-**Examples**
-
-```bash
-# Planning mode with different model
-export GOOSE_PLANNER_PROVIDER="openai"
-export GOOSE_PLANNER_MODEL="gpt-4"
-```
-
 ### Provider Retries
 
 Configurable retry parameters for LLM providers. 
@@ -173,6 +156,8 @@ These variables control how goose manages conversation sessions and context.
 | `GOOSE_TOOL_CALL_CUTOFF` | Number of tool calls to keep in full detail before summarizing older tool outputs to help maintain efficient context usage | Integer (e.g., 5, 10, 20) | Computed from the model context limit and auto-compaction threshold |
 | `GOOSE_MOIM_MESSAGE_TEXT` | Injects persistent text into goose's [working memory](/docs/guides/context-engineering/using-persistent-instructions) every turn. Useful for behavioral guardrails or persistent reminders. | Any text string | Not set |
 | `GOOSE_MOIM_MESSAGE_FILE` | Path to a file whose contents are injected into goose's [working memory](/docs/guides/context-engineering/using-persistent-instructions) every turn. Supports `~/`. Max 64 KB per file. | File path | Not set |
+
+For subagents, recipe [`settings.goose_provider` and `settings.goose_model`](/docs/guides/recipes/recipe-reference#settings) take precedence over the `GOOSE_SUBAGENT_PROVIDER` and `GOOSE_SUBAGENT_MODEL` environment variables.
 
 **Examples**
 
@@ -663,4 +648,3 @@ When deploying goose in enterprise environments, administrators might need to co
 - Environment variables take precedence over configuration files.
 - For security-sensitive variables (like API keys), consider using the system keyring instead of environment variables.
 - Some variables may require restarting goose to take effect.
-- When using the planning mode, if planner-specific variables are not set, goose will fall back to the main model configuration.

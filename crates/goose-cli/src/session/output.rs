@@ -2,6 +2,7 @@ use crate::session::builder::ExtensionFailure;
 use anstream::{adapter::strip_str, eprintln, println};
 use bat::WrappingMode;
 use console::{measure_text_width, style, Color, StyledObject, Term};
+use goose::agents::platform_extensions::todo::TODO_WRITE_TOOL_NAME_COMPLETE;
 use goose::config::Config;
 use goose::conversation::message::{
     ActionRequiredData, Message, MessageContent, SystemNotificationContent, SystemNotificationType,
@@ -550,26 +551,6 @@ pub fn render_text_no_newlines(text: &str, color: Option<Color>, dim: bool) {
     print!("{}", styled_text);
 }
 
-pub fn render_enter_plan_mode() {
-    println!(
-        "\n{} {}\n",
-        accent("Entering plan mode.").bold(),
-        style("You can provide instructions to create a plan and then act on it. To exit early, type /endplan")
-            .dim()
-    );
-}
-
-pub fn render_act_on_plan() {
-    println!(
-        "\n{}\n",
-        accent("Exiting plan mode and acting on the above plan").bold(),
-    );
-}
-
-pub fn render_exit_plan_mode() {
-    println!("\n{}\n", accent("Exiting plan mode.").bold());
-}
-
 pub fn goose_mode_message(text: &str) {
     println!("\n{} {}", accent("mode:"), text);
 }
@@ -613,7 +594,7 @@ fn render_tool_request(req: &ToolRequest, theme: Theme, debug: bool) {
             "execute_typescript" | "execute_code" => render_execute_code_request(call, debug),
             "delegate" => render_delegate_request(call, debug),
             "subagent" => render_delegate_request(call, debug),
-            "todo__write" => render_todo_request(call, debug),
+            TODO_WRITE_TOOL_NAME_COMPLETE => render_todo_request(call, debug),
             "load" => {}
             _ => render_default_request(call, debug),
         },
