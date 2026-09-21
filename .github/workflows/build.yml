@@ -1,0 +1,30 @@
+name: Build Goose CLI
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev libsqlite3-dev clang libclang-dev cmake protobuf-compiler libdbus-1-dev libxcb1-dev libxcb-util-dev libvulkan-dev
+
+      - name: Build Goose CLI
+        run: cargo build --release -p goose-cli --bin goose
+
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: goose-binary
+          path: target/release/goose
